@@ -1,0 +1,22 @@
+{
+    "router1": {
+        "ip": "ip",
+        "port": 22,
+        "username": "username",
+        "ssh_config": "/app/config/config_jumphost",
+        "auth": {
+            "type": "password",
+            "password": "pass"
+        }
+    },
+    "router2": {
+        "ip": "ip",
+        "port": 22,
+        "username": "username",
+        "ssh_config": "/app/config/config_jumphost",
+        "auth": {
+            "type": "password",
+            "password": "pass"
+        }
+    }
+}
