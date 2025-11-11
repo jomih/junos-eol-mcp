@@ -6,10 +6,12 @@ A simple MCP server with inventory management tools
 
 import asyncio
 import json
-from typing import Any
+from typing import List, Dict, Any
 from mcp.server import Server
 from mcp.types import Tool, TextContent
 import mcp.server.stdio
+from bs4 import BeautifulSoup
+
 
 # Create server instance
 server = Server("inventory-server")
@@ -24,6 +26,100 @@ SAMPLE_INVENTORY = {
     ]
 }
 
+async def extract_sw_eol_tables(content: str) -> List[Dict[str, Any]]:
+    """
+    Extract all sw-eol-table components from the content.
+    
+    Args:
+        content: The full HTML/text content
+        
+    Returns:
+        List of dictionaries containing sw-eol-table components
+    """
+    eol_tables = []
+    
+    # Pattern to match the sw-eol-table component structure
+    # This pattern captures from the opening brace before "selector" to the closing brace
+    pattern = r'\{\s*"selector"\s*:\s*"sw-eol-table"\s*,\s*"properties"\s*:\s*\{[^}]*"htmlContent"\s*:\s*\'([^\']*)\'\s*\}\s*\}'
+    
+    matches = re.finditer(pattern, content, re.DOTALL)
+    
+    for match in matches:
+        try:
+            # Get the full matched component
+            component_text = match.group(0)
+            
+            # Extract the HTML content
+            html_content = match.group(1)
+            
+            # Create a component dictionary
+            component = {
+                "selector": "sw-eol-table",
+                "properties": {
+                    "htmlContent": html_content
+                }
+            }
+            
+            eol_tables.append(component)
+            
+        except Exception as e:
+            print(f"Warning: Error parsing component: {e}")
+            continue
+    
+    return eol_tables
+
+async def parse_eol_table_html(html_content: str) -> List[Dict[str, Any]]:
+    """
+    Parse the HTML table content into structured data.
+    
+    Args:
+        html_content: HTML string containing the table
+        
+    Returns:
+        List of dictionaries representing table rows
+    """
+    soup = BeautifulSoup(html_content, 'html.parser')
+    table = soup.find('table')
+    
+    if not table:
+        return []
+    
+    # Extract headers
+    headers = []
+    thead = table.find('thead')
+    if thead:
+        header_row = thead.find('tr')
+        if header_row:
+            for th in header_row.find_all('th'):
+                headers.append(th.get_text(strip=True))
+    
+    # Extract rows
+    rows_data = []
+    tbody = table.find('tbody')
+    if tbody:
+        for tr in tbody.find_all('tr'):
+            row_dict = {}
+            cells = tr.find_all('td')
+            
+            for idx, td in enumerate(cells):
+                if idx < len(headers):
+                    header = headers[idx]
+                    
+                    # Check for links
+                    link = td.find('a')
+                    if link:
+                        row_dict[header] = {
+                            'text': td.get_text(strip=True),
+                            'url': link.get('href', ''),
+                            'title': link.get('title', '')
+                        }
+                    else:
+                        row_dict[header] = td.get_text(strip=True)
+            
+            if row_dict:
+                rows_data.append(row_dict)
+    
+    return rows_data
 
 async def analyse_inventory_internal(hw_inventory: str, eol_url: str) -> list[TextContent]:
     """Internal helper function to analyze inventory. Can be called by other tools."""
@@ -84,16 +180,37 @@ async def analyse_inventory_internal(hw_inventory: str, eol_url: str) -> list[Te
                 "note": "The tool extracted FRU models but could not verify against Juniper's EOL database"
             }, indent=2)
         )]
+
+    # Extract sw-eol-table components
+    tables_eol = extract_sw_eol_tables(eol_page_content)
+    
+    if not tables_eol:
+        print("No sw-eol-table components found in the content.")
+        return 1
     
     # Initialize the EOL list dictionary for found items
     eol_list = {}
     
     # Search for each FRU in the EOL page content
-    for fru in fru_list:
-        if fru in eol_page_content:
-            if fru not in eol_list:
-                eol_list[fru] = 0
-            eol_list[fru] += 1
+    for idx, tables_eol in enumerate(tables_eol, 1):
+        print ("fru_list is: ", fru_list)
+        eol_components_raw = tables_eol['properties']['htmlContent'].split(',')
+        eol_components_formatted = []
+        for item in eol_components_raw:
+            eol_components_formatted.append(item.strip().split('<')[0])
+        for fru in fru_list:
+            #print ("fru is: ", fru)
+            if fru in eol_components_formatted:
+                #print("encontro fru: ", fru)
+                if fru not in eol_list:
+                    eol_list[fru] = 0
+                eol_list[fru] += 1    
+
+    #for fru in fru_list:
+    #    if fru in eol_page_content:
+    #        if fru not in eol_list:
+    #            eol_list[fru] = 0
+    #        eol_list[fru] += 1
     
     result = {
         "eol_list": eol_list,
