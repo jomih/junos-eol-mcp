@@ -7,23 +7,24 @@ This demonstrates how the tool would work (using mock data since we can't connec
 import json
 
 # Mock hardware inventory that would be collected from the router
-MOCK_HW_INVENTORY = """ZDHK3176@TOEGREC2-re0> show chassis hardware clei-models
-Hardware inventory:
-Item             Version  Part number  CLEI code         FRU model number
-Midplane         REV 57   750-044219   IPMVM10FRA        CHAS-MX104-S
-PEM 0            REV 06   740-045932   IPUPAMJKAB        PWR-MX104-DC-S
-PEM 1            REV 06   740-045932   IPUPAMJKAB        PWR-MX104-DC-S
-Routing Engine 0 REV 05   750-061985   IPUCBEWCAC        RE-S-MX104-S
-Routing Engine 1 REV 05   750-061985   IPUCBEWCAC        RE-S-MX104-S
-AFEB 0                    BUILTIN
-FPC 0                     BUILTIN
-  MIC 0          REV 20   750-049846   IPUIBVXMAC        MIC-3D-20GE-SFP-E
-  MIC 1          REV 30   750-028380   COUIBDXBAA        MIC-3D-2XGE-XFP
-FPC 1                     BUILTIN
-  MIC 0          REV 20   750-049846   IPUIBVXMAC        MIC-3D-20GE-SFP-E
-  MIC 1          REV 30   750-028380   COUIBDXBAA        MIC-3D-2XGE-XFP
-FPC 2                     BUILTIN
-Fan Tray 0       REV 03   711-049570   IPUCBEVCAA        FANTRAY-MX104-S"""
+MOCK_HW_INVENTORY = """user@ROUTERREC2-re0> show chassis hardware clei-models
+    Hardware inventory:
+    Item             Version  Part number  CLEI code         FRU model number
+    Midplane         REV 57   777-777777   XXXXXXXXXX        CHAS-MX104-S
+    PEM 0            REV 06   777-777777   XXXXXXXXXX        PWR-MX104-DC-S
+    PEM 1            REV 06   777-777777   XXXXXXXXXX        PWR-MX104-DC-S
+    Routing Engine 0 REV 05   777-777777   XXXXXXXXXX        RE-S-MX104-S
+    Routing Engine 1 REV 05   777-777777   XXXXXXXXXX        RE-S-MX104-S
+    AFEB 0                    BUILTIN
+    FPC 0                     BUILTIN
+      MIC 0          REV 20   777-777777   XXXXXXXXXX        MIC-3D-20GE-SFP-E
+      MIC 1          REV 30   777-777777   XXXXXXXXXX        MIC-3D-2XGE-XFP
+    FPC 1                     BUILTIN
+      MIC 0          REV 20   777-777777   XXXXXXXXXX        MIC-3D-20GE-SFP-E
+      MIC 1          REV 30   777-777777   XXXXXXXXXX        MIC-3D-2XGE-XFP
+    FPC 2                     BUILTIN
+    Fan Tray 0       REV 03   777-777777   XXXXXXXXXX        FANTRAY-MX104-S
+    Test Tray 0      REV 03   777-777777   XXXXXXXXXX        PB-4OC12-SON-SMIR"""
 
 
 def test_get_show_chassis():
@@ -47,7 +48,7 @@ def test_get_show_chassis():
         return
     
     # Step 2: Get router details
-    router_name = "TOEGREC2"
+    router_name = "ROUTERREC2"
     print(f"\nStep 2: Getting details for router '{router_name}'")
     print("-" * 80)
     

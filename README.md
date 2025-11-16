@@ -159,7 +159,7 @@ Connects to a router and analyzes its hardware for EOL components:
 
 ```json
 {
-  "router_name": "TOEGREC2",
+  "router_name": "ROUTERREC2",
   "eol_url": "https://support.juniper.net/support/eol/product/m_series/"
 }
 ```
@@ -176,7 +176,7 @@ Connects to a router and analyzes its hardware for EOL components:
 **Output:**
 ```json
 {
-  "router_name": "TOEGREC2",
+  "router_name": "ROUTERREC2",
   "router_ip": "172.16.50.100",
   "command_executed": "show chassis hardware clei-models",
   "eol_list": {
@@ -203,7 +203,7 @@ Analyzes router hardware inventory and checks against Juniper's EOL database:
 
 ```json
 {
-  "hw_inventory": "username@TOEGREC2-re0> show chassis hardware clei-models\nHardware inventory:\nItem             Version  Part number  CLEI code         FRU model number\nMidplane         REV 57   750-044219   IPMVM10FRA        CHAS-MX104-S\nPEM 0            REV 06   740-045932   IPUPAMJKAB        PWR-MX104-DC-S\n...",
+  "hw_inventory": "username@ROUTERREC2-re0> show chassis hardware clei-models\nHardware inventory:\nItem             Version  Part number  CLEI code         FRU model number\nMidplane         REV 57   750-044219   IPMVM10FRA        CHAS-MX104-S\nPEM 0            REV 06   740-045932   IPUPAMJKAB        PWR-MX104-DC-S\n...",
   "eol_url": "https://support.juniper.net/support/eol/product/m_series/"
 }
 ```
